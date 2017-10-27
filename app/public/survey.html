@@ -156,14 +156,100 @@
     </select>
     <br>
     <br>
-    
+    <br>
+
+    <button type="submit" class="btn btn-primary btn-lg btn-block" id="submit"><i class="fa fa-check-circle" aria-hidden="true"></i>Submit</button>
+    <hr>
+
     <footer class="footer">
         <div class="container">
           <p><a href="#">API Friends List</a> | 
             <a href="https://github.com/molliechacon/friendfinder">GitHub Repo</a></p>
         </div>
-      </footer>
+    </footer>
+
+    <!-- Modal -->
+	<div id="resultsModal" class="modal fade" role="dialog">
+	    <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h2 class="modal-title"><strong>Your Best Match is: </strong></h2>
+                </div>
+                <div class="modal-body">
+                    <h2 id="matchName"></h2>
+                    <img id="matchPhoto" src="" alt="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+	    </div>
+    </div>
 </div>
+
+<script type="text/javascript"> 
+
+    // gather inputs
+    $("#submit").on("click", function(event) {
+        event.preventDefault();
+
+        // validate inputs
+        function validate() {
+            var valid = true;
+            $(".form-control").each(function() {
+                if ( $(this).val() === "") {
+                    valid = false;
+                    console.log(valid);
+                }
+            });
+
+            $(".chosen-select").each(function() {
+                if ( $(this).val() == "") {
+                    valid = false;
+                    console.log(valid);
+                }
+            })
+            return valid;
+            console.log(valid);
+        };
+
+        // if all fields filled out
+        if (validate() === true) {
+
+            // create object to hold user data
+            var userData = {
+                name: $("#name").val().trim(),
+                photo: $("#photoLink").val().trim(),
+                scores: [$("#q1").val(), $("#q2").val(), $("#q3").val(), $("#q4").val(), $("#q5").val(), $("#q6").val(), $("#q7").val(), $("#q8").val(), $("#q9").val(), $("#q10").val()]
+            };
+
+            // console.log(userData);
+
+            // grab url
+            var currentURL = window.location.origin;
+
+            // post data to friends api
+            $.post(currentURL + "/api/friends", userData, function(data) {
+
+                // grab best match info and post in modal
+                $("#matchName").text(data.name);
+                $("#matchPhoto").attr("src", data.photo);
+
+                // show modal
+                $("#resultsModal").modal("toggle");
+
+            });
+            
+        } else {
+            alert("Please fill out all fields before submitting!");
+        }
+
+        return false;
+    });
+
+</script>
 
 </body>
 </html>
